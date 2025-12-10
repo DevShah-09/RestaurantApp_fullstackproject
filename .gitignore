@@ -1,0 +1,84 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+.eggs/
+*.egg
+dist/
+build/
+# Virtual environments
+env/
+venv/
+ENV/
+
+# Django
+*.log
+*.pot
+*.pyc
+local_settings.py
+db.sqlite3
+media/
+
+# Pytest
+.pytest_cache/
+
+# VSCode
+.vscode/
+
+# Rider/IDEA
+.idea/
+
+# Environment variables
+.env
+.env.*
+
+# Node / frontend
+/frontend/node_modules/
+/node_modules/
+/frontend/dist/
+/frontend/.vite/
+/npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+pnpm-lock.yaml
+
+# Vite (root)
+dist/
+
+# Misc
+coverage/
+coverage.*
+*.cover
+*.tmp
+*.swp
+
+# Images and large uploads (if you keep them in repo during dev)
+#public/images/chef.png
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# Logs
+logs/
+*.log
+
+# Generated files
+*.sqlite3
+
+# OS generated files
+Icon\r
+
+# JetBrains
+.idea/
+
+# Local Jetbrains settings
+*.iml
+
+# End
