@@ -59,6 +59,38 @@ const Menu = () => {
     return categories[cat] || cat;
   };
 
+  const handleAddToCart = (item) => {
+    const restaurantId = restaurantData.restaurant_id || restaurantData.id;
+    const existingCart=JSON.parse(localStorage.getItem('cart')) || { restaurantId , items:[], };
+    
+    if(existingCart.restaurantId !== restaurantId){
+      existingCart.restaurantId = restaurantId;
+      existingCart.items=[];
+    }
+
+    //check if item is already there in cart
+    let itemIndex=existingCart.items.findIndex(
+      (cartitem)=> cartitem.id === item.id
+    );
+
+    if(itemIndex === -1){
+      existingCart.items.push(
+        {
+          id:item.id,
+          name:item.name,
+          price:item.price,
+          is_veg:item.is_veg,
+          is_jain:item.is_jain,
+          quantity:1,
+          image:item.image,
+        }
+      );
+    }else existingCart.items[itemIndex].quantity+=1;
+
+    localStorage.setItem('cart',JSON.stringify(existingCart));
+
+  };
+
   return (
     <div
       className="min-h-screen flex flex-col py-6 px-4"
@@ -73,7 +105,7 @@ const Menu = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="text-red-950 text-5xl text-center font-extrabold mb-4"
+        className="text-red-950 text-5xl text-center font-extrabold mb-6 mt-2"
       >
         <h1>{restaurantData ? restaurantData.restaurant_name : 'Restaurant'}</h1>
       </motion.header>
@@ -82,23 +114,28 @@ const Menu = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.4 }}
-        className="flex items-center gap-4 mb-6 mt-6"
+        className="flex items-center gap-4 mb-6 mt-7"
       >
         <button
           onClick={() => navigate('/')}
-          className="bg-stone-950 text-white px-4 py-2 ml-3 text-3xl rounded-2xl hover:bg-stone-800 transition"
+          className="bg-stone-950 text-white px-4 py-2 ml-3 text-xl rounded-2xl"
         >
           ← Back
         </button>
-        <h2 className="bg-yellow-200 text-slate-800 text-3xl font-bold px-4 py-2 rounded-2xl">
+        <h2 className="bg-yellow-200 text-slate-800 text-2xl font-bold px-4 py-2 rounded-2xl">
           {getCategoryLabel(category)}
         </h2>
+
+        <button onClick={() => navigate('/cart')} className="bg-blue-200 text-slate-800 text-2xl font-bold px-4 py-2 rounded-2xl">
+          Cart
+        </button>
+
       </motion.div>
 
       {loading ? (
         <p className="text-center text-gray-800 text-xl">Loading menu items...</p>
       ) : menuItems.length === 0 ? (
-        <p className="text-center text-gray-800 text-xl">No items found in this category.</p>
+        <p className="text-center mt-7 text-gray-800 text-4xl">No items found in this category.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto w-full">
           {menuItems.map((item) => (
@@ -133,7 +170,7 @@ const Menu = () => {
                     )}
                   </div>
                 </div>
-                <button className="w-full mt-4 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition font-semibold">
+                <button onClick={() => handleAddToCart(item)} className="w-full mt-4 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition font-semibold">
                   Add to Cart
                 </button>
               </div>
