@@ -20,9 +20,9 @@ const Home=()=>{
   const [menuItems,setMenuItems]=useState([]);
   const [loading,setLoading]=useState(false);
 
-  //extracting QR token from URL or localStorage
+  //extracting QR token from URL or sessionStorage
   const urlToken = new URLSearchParams(window.location.search).get('qr');
-  const qrtoken = urlToken || localStorage.getItem('qrtoken');
+  const qrtoken = urlToken || sessionStorage.getItem('qrtoken');
 
   //fetch the restaurant and table details
   useEffect(()=>{
@@ -31,8 +31,8 @@ const Home=()=>{
       try{
         const res=await API.get(`api/restaurants/by-qr/${qrtoken}/`);
         setRestaurantData(res.data);
-        // Store QR token in localStorage for menu page
-        localStorage.setItem('qrtoken', qrtoken);
+        // Store QR token in sessionStorage for menu page (cleared on browser close)
+        sessionStorage.setItem('qrtoken', qrtoken);
       }catch(err) {console.error(err);}
     };
     fetchDetails();

@@ -14,9 +14,12 @@ class Order(models.Model):
   created_at=models.DateTimeField(auto_now_add=True)
   total=models.DecimalField(max_digits=10,decimal_places=2,default=0)
   status=models.CharField(max_length=20,choices=STATUS,default='pending')
+  estimated_time=models.IntegerField(default=30)
 
   def __str__(self):
-    return f"Order of {self.table.table_no} -- {self.restaurant.name} "
+    if self.table:
+      return f"Order of {self.table.table_no} -- {self.restaurant.name} "
+    return f"Order -- {self.restaurant.name}"
   
 
 class OrderItem(models.Model):

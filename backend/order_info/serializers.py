@@ -18,9 +18,12 @@ class OrderItemSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
   ordered_items=OrderItemSerializer(many=True)
 
+  restaurant = serializers.ReadOnlyField(source='restaurant.name')
+  table_no = serializers.ReadOnlyField(source='table.table_no')
+
   class Meta:
     model=Order
-    fields='__all__'
+    fields=['id', 'restaurant', 'table', 'table_no', 'created_at', 'total', 'status', 'estimated_time', 'ordered_items']
 
   def create(self,validated_data):
     items_data=validated_data.pop('ordered_items')
@@ -31,9 +34,10 @@ class OrderSerializer(serializers.ModelSerializer):
       qty=item_data['qty']
       OrderItem.objects.create(order=order,item=item,qty=qty)
       total+=item.price*qty
-      order.total=total
-      order.save()
-      return order
+
+    order.total=total
+    order.save()
+    return order
 
 
 

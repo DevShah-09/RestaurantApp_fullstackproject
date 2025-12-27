@@ -9,9 +9,10 @@ const Menu = () => {
   const [restaurantData, setRestaurantData] = useState(null);
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(null);
 
-  // Extract QR token from localStorage (set on home page)
-  const qrtoken = localStorage.getItem('qrtoken');
+  // Extract QR token from session-storage 
+  const qrtoken = sessionStorage.getItem('qrtoken');
 
   // Fetch restaurant details
   useEffect(() => {
@@ -61,11 +62,15 @@ const Menu = () => {
 
   const handleAddToCart = (item) => {
     const restaurantId = restaurantData.restaurant_id || restaurantData.id;
-    const existingCart=JSON.parse(localStorage.getItem('cart')) || { restaurantId , items:[], };
-    
-    if(existingCart.restaurantId !== restaurantId){
-      existingCart.restaurantId = restaurantId;
-      existingCart.items=[];
+    let existingCart = null;
+    try { existingCart = JSON.parse(localStorage.getItem('cart')); } catch (e) { existingCart = null; }
+
+    if (!existingCart || typeof existingCart !== 'object') {
+      existingCart = { restaurantId, items: [] };
+    }
+
+    if (existingCart.restaurantId !== restaurantId) {
+      existingCart = { restaurantId, items: [] };
     }
 
     //check if item is already there in cart
@@ -87,8 +92,9 @@ const Menu = () => {
       );
     }else existingCart.items[itemIndex].quantity+=1;
 
-    localStorage.setItem('cart',JSON.stringify(existingCart));
-
+    try { localStorage.setItem('cart', JSON.stringify(existingCart)); } catch (e) { console.error('Failed to save cart', e); }
+    setMessage('Added to cart');
+    setTimeout(() => setMessage(null), 1400);
   };
 
   return (
@@ -131,6 +137,12 @@ const Menu = () => {
         </button>
 
       </motion.div>
+
+      {message && (
+        <div className="fixed bottom-8 right-8 bg-green-500 text-white px-4 py-2 rounded shadow-lg">
+          {message}
+        </div>
+      )}
 
       {loading ? (
         <p className="text-center text-gray-800 text-xl">Loading menu items...</p>
