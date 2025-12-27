@@ -84,7 +84,7 @@ const AdminDashboard = () => {
 
               <h3 className="text-xl font-bold mb-4">Table {o.table_no || 'N/A'}</h3>
 
-              <div className="flex-grow space-y-3 mb-6">
+              <div className="grow space-y-3 mb-6">
                 {o.ordered_items && o.ordered_items.map((item, idx) => (
                   <div key={idx} className="flex justify-between text-sm text-zinc-400">
                     <span>{item.qty}x {item.item.name}</span>
