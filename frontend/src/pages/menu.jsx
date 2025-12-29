@@ -66,31 +66,41 @@ const Menu = () => {
     try { existingCart = JSON.parse(localStorage.getItem('cart')); } catch (e) { existingCart = null; }
 
     if (!existingCart || typeof existingCart !== 'object') {
-      existingCart = { restaurantId, items: [] };
+      existingCart = {
+        restaurantId,
+        tableId: restaurantData.table_id,
+        tableNo: restaurantData.table_no,
+        items: []
+      };
     }
 
     if (existingCart.restaurantId !== restaurantId) {
-      existingCart = { restaurantId, items: [] };
+      existingCart = {
+        restaurantId,
+        tableId: restaurantData.table_id,
+        tableNo: restaurantData.table_no,
+        items: []
+      };
     }
 
     //check if item is already there in cart
-    let itemIndex=existingCart.items.findIndex(
-      (cartitem)=> cartitem.id === item.id
+    let itemIndex = existingCart.items.findIndex(
+      (cartitem) => cartitem.id === item.id
     );
 
-    if(itemIndex === -1){
+    if (itemIndex === -1) {
       existingCart.items.push(
         {
-          id:item.id,
-          name:item.name,
-          price:item.price,
-          is_veg:item.is_veg,
-          is_jain:item.is_jain,
-          quantity:1,
-          image:item.image,
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          is_veg: item.is_veg,
+          is_jain: item.is_jain,
+          quantity: 1,
+          image: item.image,
         }
       );
-    }else existingCart.items[itemIndex].quantity+=1;
+    } else existingCart.items[itemIndex].quantity += 1;
 
     try { localStorage.setItem('cart', JSON.stringify(existingCart)); } catch (e) { console.error('Failed to save cart', e); }
     setMessage('Added to cart');

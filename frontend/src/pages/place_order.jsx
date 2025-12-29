@@ -56,6 +56,7 @@ const PlaceOrder = () => {
     setError(null);
 
     const payload = {
+      table: cart.tableId,
       ordered_items: cart.items.map(item => ({
         item_id: item.id,
         qty: item.quantity
@@ -152,7 +153,7 @@ const PlaceOrder = () => {
     );
   }
 
- 
+
   if (!orderId) {
     if (!cart) {
       return (

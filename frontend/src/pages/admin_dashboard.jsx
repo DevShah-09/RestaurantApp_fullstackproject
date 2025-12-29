@@ -4,8 +4,10 @@ import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const [order, setOrder] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [restaurantName, setRestaurantName] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
@@ -23,13 +25,22 @@ const AdminDashboard = () => {
       const res = await axios.get('http://127.0.0.1:8000/admin-api/orders/', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setOrder(res.data);
+
+      // Handle the new object response format
+      if (res.data.orders) {
+        setOrders(res.data.orders);
+        setRestaurantName(res.data.restaurant_name);
+      } else {
+        // Fallback for old list response format (if any)
+        setOrders(res.data);
+      }
       setLoading(false);
     } catch (err) {
       if (err.response && err.response.status === 401) {
         navigate('/admin/login');
       } else {
-        console.error("Error Fetching Orders...");
+        console.error("Error Fetching Orders...", err);
+        setError("Failed to fetch orders. Please try again.");
       }
       setLoading(false);
     }
@@ -53,6 +64,7 @@ const AdminDashboard = () => {
   };
 
   if (loading) return <div>Loading...</div>;
+  if (error) return <div className="min-h-screen bg-black text-white p-8">{error}</div>;
 
   return (
     <div className="min-h-screen bg-black text-white p-8">
@@ -60,7 +72,9 @@ const AdminDashboard = () => {
         <div className="flex justify-between items-center mb-10 border-b border-zinc-800 pb-6">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
-            <p className="text-zinc-500 text-sm mt-1">Manage restaurant orders and status</p>
+            <p className="text-zinc-500 text-sm mt-1">
+              {restaurantName ? `Managing orders for: ${restaurantName}` : 'Manage restaurant orders and status'}
+            </p>
           </div>
           <button
             onClick={handleLogout}
@@ -71,12 +85,12 @@ const AdminDashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {order.map((o) => (
+          {orders.map((o) => (
             <div key={o.id} className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 flex flex-col h-full">
               <div className="flex justify-between items-start mb-4">
                 <span className="bg-zinc-800 text-zinc-400 text-xs px-2 py-1 rounded font-mono">#{o.id}</span>
                 <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded border ${o.status === 'completed' ? 'border-zinc-500 text-zinc-300' :
-                    o.status === 'preparing' ? 'border-white text-white' : 'border-zinc-700 text-zinc-500'
+                  o.status === 'preparing' ? 'border-white text-white' : 'border-zinc-700 text-zinc-500'
                   }`}>
                   {o.status}
                 </span>
@@ -87,8 +101,8 @@ const AdminDashboard = () => {
               <div className="grow space-y-3 mb-6">
                 {o.ordered_items && o.ordered_items.map((item, idx) => (
                   <div key={idx} className="flex justify-between text-sm text-zinc-400">
-                    <span>{item.qty}x {item.item.name}</span>
-                    <span>₹{item.item.price * item.qty}</span>
+                    <span>{item.qty}x {item.item ? item.item.name : 'Unknown Item'}</span>
+                    <span>₹{item.item ? item.item.price * item.qty : 0}</span>
                   </div>
                 ))}
               </div>
@@ -112,9 +126,9 @@ const AdminDashboard = () => {
           ))}
         </div>
 
-        {order.length === 0 && (
+        {orders.length === 0 && (
           <div className="text-center py-20 border border-dashed border-zinc-800 rounded-2xl">
-            <p className="text-zinc-500">No active orders found.</p>
+            <p className="text-zinc-500">No active orders found for {restaurantName || 'this restaurant'}.</p>
           </div>
         )}
       </div>
