@@ -27,10 +27,16 @@ class AdminOrderAPIView(APIView):
   permission_classes=[IsAuthenticated]
 
   def get(self,request):
-    staff=request.user.staff
-    order=Order.objects.filter(restaurant=staff.restaurant)
-    serializer=OrderSerializer(order,many=True)
-    return Response(serializer.data)
+    try:
+      staff=request.user.staff
+      print(f"Admin User: {request.user.username}, Staff Restaurant: {staff.restaurant}")
+      order=Order.objects.filter(restaurant=staff.restaurant).order_by('-created_at')
+      print(f"Found {order.count()} orders for this restaurant")
+      serializer=OrderSerializer(order,many=True)
+      return Response(serializer.data)
+    except Exception as e:
+      print(f"Error in AdminOrderAPIView: {e}")
+      return Response({"error": str(e)}, status=500)
   
 class AdminUpdateOrderStatusAPIView(APIView):
   permission_classes=[IsAuthenticated]
@@ -38,11 +44,10 @@ class AdminUpdateOrderStatusAPIView(APIView):
   def put(self,request,order_id):
     staff=request.user.staff
     try:
-      #here .get() method takes parameters which are filters coz here its a model query not a dict
       order=Order.objects.get(id=order_id,restaurant=staff.restaurant)
     except Order.DoesNotExist:
       return Response("Order not Found!!!",status=404)
-    #.get(key,default_value) here request.data will be a dictionary obj
+    
     order.status=request.data.get('status',order.status)
     order.save()
     return Response("Order Updated!")
