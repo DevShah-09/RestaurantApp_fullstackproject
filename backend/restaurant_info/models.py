@@ -11,8 +11,13 @@ class Restaurant(models.Model):
   
 class Table(models.Model):
   table_no=models.PositiveIntegerField()
-  qr_code_token=models.CharField(max_length=255,unique=True)
+  qr_code_token=models.CharField(max_length=255,unique=True,blank=True)
   restaurant=models.ForeignKey(Restaurant,on_delete=models.CASCADE,related_name='tables')
+
+  def save(self,*args,**kwargs):
+    if not self.qr_code_token:
+      self.qr_code_token=str(uuid.uuid4())
+    super().save(*args,**kwargs)
 
   #making table_no unique apply constraints to it 
   class Meta:

@@ -5,6 +5,8 @@ from order_info.serializers import OrderSerializer
 from rest_framework.response import Response
 from menu.serializers import MenuItemSerializer
 from menu.models import MenuItem
+from restaurant_info.models import Table
+from restaurant_info.serializers import TableSerializer
 from .serializers import StaffSerializer
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -84,6 +86,41 @@ class AdminMenuUploadAPIView(APIView):
                 is_chefs_special=row.get('is_chefs_special', 'False') == 'True'
             )
     return Response("CSV uploaded successfully!!!")
+
+class AdminTableAPIView(APIView):
+  permission_classes=[IsAuthenticated]
+
+  def get(self,request):
+    try:
+      staff=request.user.staff
+      tables=Table.objects.filter(restaurant=staff.restaurant).order_by('table_no')
+      serializer=TableSerializer(tables,many=True)
+      return Response({
+          "restaurant_name": staff.restaurant.name,
+          "tables": serializer.data
+      })
+    except Exception as e:
+      return Response({"error": str(e)}, status=500)
+
+  def post(self,request):
+    try:
+      staff=request.user.staff
+      table_no=request.data.get('table_no')
+      if not table_no:
+        return Response({"error": "Table number is required"}, status=400)
+      
+      # Check if table already exists for this restaurant
+      if Table.objects.filter(restaurant=staff.restaurant, table_no=table_no).exists():
+        return Response({"error": f"Table {table_no} already exists"}, status=400)
+
+      table = Table.objects.create(
+        restaurant=staff.restaurant,
+        table_no=table_no
+      )
+      serializer = TableSerializer(table)
+      return Response(serializer.data, status=201)
+    except Exception as e:
+      return Response({"error": str(e)}, status=500)
 
 
 
