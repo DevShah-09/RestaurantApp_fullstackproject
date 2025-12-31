@@ -23,7 +23,11 @@ Scan QR code :
 
 
 <img width="1919" height="1012" alt="image" src="https://github.com/user-attachments/assets/d7e9002a-0a25-4c83-b54a-c6795d13ecf6" />
+
+Menu Website :
+
 <img width="268" height="583" alt="image" src="https://github.com/user-attachments/assets/84f54e25-b489-4f07-886f-4641b8638184" />
+
 
 Cart : 
 
@@ -31,6 +35,10 @@ Cart :
 <img width="282" height="590" alt="image" src="https://github.com/user-attachments/assets/ff2f968a-9659-487e-83bf-83e6506f39b8" />
 <img width="273" height="584" alt="image" src="https://github.com/user-attachments/assets/8ecf897f-1105-4dfa-a107-5c07571f0d6b" />
 <img width="270" height="579" alt="image" src="https://github.com/user-attachments/assets/825f3ace-d255-4e6e-8489-25ced6369041" />
+
+Dashboard after placing order :
+
+<img width="1918" height="1029" alt="image" src="https://github.com/user-attachments/assets/6b0ccf78-0f18-4bfa-846b-7d713fd92f3b" />
 
 
 
